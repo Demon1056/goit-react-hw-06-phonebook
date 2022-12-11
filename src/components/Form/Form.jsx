@@ -1,7 +1,10 @@
-import PropTypes from 'prop-types';
+import shortid from 'shortid';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { FormStyles, FieldStyles, ErrorMessageStyled } from './Form.styled';
+import { addContact } from 'components/redux/myContactSlise';
+import { useSelector, useDispatch } from 'react-redux';
+
 const phoneRegExp =
   /^\(?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
 const nameValid = /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/gi;
@@ -16,11 +19,32 @@ const schema = yup.object().shape({
     .matches(phoneRegExp, 'Phone number is not valid')
     .required('Sorry, but Number is a required field'),
 });
-export const ContactForm = ({ showName }) => {
+
+export const ContactForm = () => {
+  const contacts = useSelector(state => state.myContacts.contacts);
+  const dispatch = useDispatch();
+  const generId = () => shortid.generate();
+  const createNewContact = e => {
+    const id = generId();
+    return { ...e, id };
+  };
+  const resetForm = () => {
+    return (values.name = ''
+    values.number = '';)
+  };
+  const updateContacts = values => {
+    if (contacts.find(({ name }) => name === values.name)) {
+      return alert(`${values.name} is already in contacts`);
+    }
+    {
+      const newContact = createNewContact(values);
+      dispatch(addContact(newContact));
+    }
+  };
   return (
     <Formik
       initialValues={{ name: '', number: '' }}
-      onSubmit={showName}
+      onSubmit={e => updateContacts(e)}
       validationSchema={schema}
     >
       <FormStyles>
@@ -38,7 +62,4 @@ export const ContactForm = ({ showName }) => {
       </FormStyles>
     </Formik>
   );
-};
-ContactForm.propTypes = {
-  showName: PropTypes.func.isRequired,
 };

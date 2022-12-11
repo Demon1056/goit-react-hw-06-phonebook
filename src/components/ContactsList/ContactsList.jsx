@@ -1,12 +1,22 @@
 import PropTypes from 'prop-types';
 import { ListItem } from './ContactsListStyled';
-export const ContactList = ({ data, deleteContact }) => {
+import { deleteContact } from 'components/redux/myContactSlise';
+import { useDispatch } from 'react-redux';
+
+export const ContactList = ({ data }) => {
+  const dispatch = useDispatch();
   return (
     <ul>
       {data.map(item => (
         <ListItem key={item.id}>
           {`${item.name} : ${item.number}`}
-          <button onClick={() => deleteContact(item)}>Delete</button>
+          <button
+            onClick={() => {
+              return dispatch(deleteContact(item));
+            }}
+          >
+            Delete
+          </button>
         </ListItem>
       ))}
     </ul>
@@ -15,5 +25,4 @@ export const ContactList = ({ data, deleteContact }) => {
 
 ContactList.propTypes = {
   data: PropTypes.array.isRequired,
-  deleteContact: PropTypes.func.isRequired,
 };

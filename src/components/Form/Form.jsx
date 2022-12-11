@@ -28,23 +28,23 @@ export const ContactForm = () => {
     const id = generId();
     return { ...e, id };
   };
-  const resetForm = () => {
-    return (values.name = ''
-    values.number = '';)
-  };
-  const updateContacts = values => {
+
+  const updateContacts = (values, actions) => {
     if (contacts.find(({ name }) => name === values.name)) {
-      return alert(`${values.name} is already in contacts`);
+      alert(`${values.name} is already in contacts`);
+      actions.resetForm();
+      return;
     }
     {
       const newContact = createNewContact(values);
       dispatch(addContact(newContact));
+      actions.resetForm();
     }
   };
   return (
     <Formik
       initialValues={{ name: '', number: '' }}
-      onSubmit={e => updateContacts(e)}
+      onSubmit={(e, actions) => updateContacts(e, actions)}
       validationSchema={schema}
     >
       <FormStyles>
